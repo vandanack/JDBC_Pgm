@@ -1,0 +1,312 @@
+package com.fis.app.dao;
+
+import java.util.List;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fis.app.exce.NoDeviceFoundException;
+import com.fis.app.model.ElectronicDevice;
+
+
+
+public class ElectronicDAOImpl implements IElectronicDeviceDAO {
+	
+	
+	Connection con = null;
+
+	String insertEleQuery = "insert into fisapp.electronic values(?,?,?,?,?,?)";
+	String selectAllEle = "select * from fisapp.electronic";
+	String change = "update fisapp.electronic set cost=? where deviceId=?";
+	String change2 = "update fisapp.electronic set ratings=? where deviceId=?";
+	String  delete1 = "delete from fisapp.electronic where deviceId=?";
+	String getValues= "select brandname from fisapp.electronic where ratings=? and color=?";
+	String countofbrand= "select count(*) from fisapp.electronic where brandName=?";
+	String totcost= "select cost from fisapp.electronic where brandName=?";
+	
+	@Override
+	public boolean addDevice(ElectronicDevice d) {
+		
+		con = DatabaseUtil.getConnection();
+		boolean isInserted = false;
+		if (con != null) {
+
+			// Step1 : extract employee details from e object
+			/*
+			 * 	private int deviceId;
+	private String brandName;
+	private int cost;
+	private int power;
+	private int starRatings;
+	private String color;
+	
+			 */
+			
+			int id=d.getDeviceId();
+			String brand=d.getBrandName();
+			int pow=d.getPower();
+			int cost=d.getCost();
+			String color=d.getColor();
+			int rating=d.getStarRatings();
+			
+			
+			
+			// Step 2 :- write the code to create complete insert Query with data
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(insertEleQuery);
+				ps.setInt(1, id);
+				ps.setString(2, brand);
+				ps.setInt(3,cost);
+				ps.setInt(4,pow);
+				ps.setString(5,color);
+				ps.setInt(6,rating);
+
+				// Step 3 : execute Query
+				int i = ps.executeUpdate(); 
+				if (i > 0)
+					isInserted = true;
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+
+		return isInserted;
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public List<ElectronicDevice> getAllDevices() {
+		// TODO Auto-generated method stub
+		con = DatabaseUtil.getConnection();
+		List<ElectronicDevice> electronicList = new ArrayList<>();
+		if (con != null) {
+
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(selectAllEle);
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()) {
+					ElectronicDevice temp = new ElectronicDevice(); // default emp
+					
+					
+					temp.setDeviceId(rs.getInt(1));
+					temp.setBrandName(rs.getString(2));
+					temp.setCost(rs.getInt(3));
+					temp.setPower(rs.getInt(4));
+					temp.setColor(rs.getString(5));
+					temp.setStarRatings(rs.getInt(6));
+					
+					electronicList.add(temp);
+					
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return electronicList;
+	}
+
+	@Override
+	public boolean changeDevicePrice(int devId, int newPrice) throws NoDeviceFoundException {
+		// TODO Auto-generated method stub
+		boolean isUpdate = false;
+		
+		con = DatabaseUtil.getConnection();
+		if (con != null) {
+			
+			PreparedStatement ps;
+			
+			try {
+				ps = con.prepareStatement(change);
+				ps.setInt(1, newPrice);
+				ps.setInt(2, devId);
+			
+				// Step 3 : execute Query
+				int i = ps.executeUpdate(); 
+				if (i > 0)
+					isUpdate = true;
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		return isUpdate;
+		
+	}
+
+	
+	
+	@Override
+	public boolean changeDeviceRating(int deviceId, int newRating) throws NoDeviceFoundException {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+				boolean isUpdate = false;
+				
+				con = DatabaseUtil.getConnection();
+				if (con != null) {
+					
+					PreparedStatement ps;
+					
+					try {
+						ps = con.prepareStatement(change2);
+						ps.setInt(1, newRating);
+						ps.setInt(2, deviceId);
+					
+						// Step 3 : execute Query
+						int i = ps.executeUpdate(); 
+						if (i > 0)
+							isUpdate = true;
+						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+				}
+				return isUpdate;
+				
+	}
+
+	@Override
+	public boolean deleteDevice(int deviceId) throws NoDeviceFoundException {
+		// TODO Auto-generated method stub
+		
+		boolean checkdevice=false;
+		con = DatabaseUtil.getConnection();
+		if (con != null) {
+
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(delete1);
+				ps.setInt(1, deviceId);
+				
+
+				// Step 3 : execute Query
+				int i = ps.executeUpdate(); 
+				if (i > 0)
+					checkdevice = true;
+				
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return checkdevice;
+	
+	}
+
+	@Override
+	public List<ElectronicDevice> getBrandNameBasedOnRatingsNColor(int rating, String type) {
+		// TODO Auto-generated method stub
+		con = DatabaseUtil.getConnection();
+		List<ElectronicDevice> electronicList2 = new ArrayList<>();
+		if (con != null) {
+
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(getValues);
+				ps.setInt(1, rating);
+				ps.setString(2, type);
+				
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()) {
+					ElectronicDevice tempp = new ElectronicDevice(); // default emp
+					
+					
+					tempp.setBrandName(rs.getString(1));
+					
+					electronicList2.add(tempp);
+					
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return electronicList2;
+		//return null;
+		
+	}
+
+	@Override
+	public int countBrandType(String type) {
+		
+		// TODO Auto-generated method stub
+		con = DatabaseUtil.getConnection();
+		int count=0;
+		if (con != null) {
+
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(countofbrand);
+				ps.setString(1, type);
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()) {
+					count++;
+					
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
+		return count;
+	}
+
+	@Override
+	public List getSumofPriceBasedOnType(String type) {
+		// TODO Auto-generated method stub
+		con = DatabaseUtil.getConnection();
+		List<ElectronicDevice> electronicList3 = new ArrayList<>();
+		if (con != null) {
+
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(totcost);
+				ps.setString(1, type);
+				
+				
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()) {
+					ElectronicDevice tempp = new ElectronicDevice(); // default emp
+				
+					tempp.setCost(rs.getInt(1));
+					
+					electronicList3.add(tempp);	
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
+		return electronicList3;
+	}
+
+}

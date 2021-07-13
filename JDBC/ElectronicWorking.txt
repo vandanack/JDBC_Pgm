@@ -1,0 +1,64 @@
+package com.fis.app.test;
+
+import java.util.List;
+
+import com.fis.app.dao.ElectronicDAOImpl;
+import com.fis.app.dao.IElectronicDeviceDAO;
+import com.fis.app.model.ElectronicDevice;
+
+public class ElectronicWorking {
+
+	public static void main(String[] args) {
+		
+		try {
+			
+			
+			IElectronicDeviceDAO dao = new ElectronicDAOImpl();
+			
+			/*ElectronicDevice mockEmployee = new ElectronicDevice(2,"bcd",20045,40,20,"Black");
+			
+			boolean a = dao.addDevice(mockEmployee);
+			System.out.println(a); */
+			
+			
+			/*
+			List<ElectronicDevice> list = dao.getAllDevices();
+			
+			list.stream().forEach((ele)->System.out.println(ele));
+			
+			*/
+			
+			/*boolean b= dao.changeDevicePrice(2,8000);
+			System.out.println(b);*/
+			
+			
+			/*boolean c= dao.changeDeviceRating(2,4);
+			System.out.println(c);*/
+			
+			/*boolean d= dao.deleteDevice(108);
+			System.out.println(d);*/
+			
+			/*Employee e = dao.getEmployeeBasedOnID(1114);
+			System.out.println(e);*/
+			
+			/*List<ElectronicDevice> list2 = dao.getBrandNameBasedOnRatingsNColor(5,"white");
+			list2.stream().forEach((ele)->System.out.println(ele.getBrandName()));
+			*/
+			/*int countdev=dao.countBrandType("ab");
+			System.out.println(countdev);*/
+			
+			int sum=0;
+			List<ElectronicDevice> list3 = dao.getSumofPriceBasedOnType("Getdev");
+			
+			for(ElectronicDevice b : list3)
+			{
+				sum=sum+b.getCost();
+			}
+			System.out.println(sum);
+			//list3.stream().forEach((ele)->(sum=sum+ele.getCost()));
+			
+		} catch (Exception e) {
+			System.out.println(" Problem "+e);
+		}
+	}
+}
